@@ -26,9 +26,9 @@ async def lifespan(app: FastAPI):
                 async with message.process():
                     try:
                         raw = message.body.decode()
-                        logger.info(f'[{name_queue}] Mensagem recebida: {raw}')
-
                         body = json.loads(raw)
+
+                        logger.info(f'[{name_queue}] Mensagem recebida: {body['query_id']}')
 
                         await collection_queries.update_one(
                             {'_id': body['query_id']},
