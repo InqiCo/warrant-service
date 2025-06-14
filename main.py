@@ -32,10 +32,12 @@ async def lifespan(app: FastAPI):
 
                         await collection_queries.update_one(
                             {'_id': body['query_id']},
-                            {'$set': {
-                                'status': 'IP',
-                                'updated_at': get_brazil_datetime()
-                            }}
+                            {
+                                '$set': {
+                                    f'status.{body['service_code']}': 'IP',
+                                    'updated_at': get_brazil_datetime()
+                                }
+                            }
                         )
 
                         crawler = CrawlerCriminal('portalbnmp.cnj.jus.br')
