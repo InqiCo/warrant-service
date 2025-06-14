@@ -1,0 +1,17 @@
+fastapi==0.115.12
+python-jose==3.5.0
+passlib3==0.1.0
+bcrypt==4.0.1
+motor==3.7.1
+email_validator==2.2.0
+gunicorn==23.0.0
+pydantic==2.11.5
+pytz==2025.2
+python-dotenv==1.1.0
+passlib==1.7.4
+requests==2.32.4
+passlib==1.7.4
+passlib3==0.1.0
+validate_docbr==1.11.0
+uvicorn==0.34.3
+aio-pika==9.5.5
