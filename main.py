@@ -57,11 +57,16 @@ async def lifespan(app: FastAPI):
                         logger.error(f'[{name_queue}] Erro ao processar mensagem: {e}')
                         raise
 
-    task = asyncio.create_task(consume(queue, 'publish-warrants'))
+    tasks = [
+        asyncio.create_task(consume(queue, f'publish-warrants-{i+1}'))
+        for i in range(3)
+    ]
 
     yield
 
-    task.cancel()
+    for task in tasks:
+        task.cancel()
+
     await connection.close()
 
 
