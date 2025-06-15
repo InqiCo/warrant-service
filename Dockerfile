@@ -22,4 +22,4 @@ COPY . .
 
 EXPOSE 8027
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8028"]
+CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT}"]
