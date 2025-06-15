@@ -157,7 +157,7 @@ class CrawlerCriminal:
                 ).decode()
 
                 dict_return = {
-                    'file_base64': no_warrants_file,
+                    'file': no_warrants_file,
                     'criminal_record': [],
                     'cpf': dict_warrants['cpf']
                 }
@@ -183,7 +183,7 @@ class CrawlerCriminal:
                     }
 
                     dict_return = {
-                        'file_base64': w['file'],
+                        'file': w['file'],
                         'criminal_record': criminal_record_save,
                         'cpf': dict_warrants['cpf']
                     }
