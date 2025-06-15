@@ -12,6 +12,8 @@ class Settings:
     RECAPTCHA_KEY: str = getenv('RECAPTCHA_KEY')
     MONGO_URL: str = getenv('MONGO_URL')
     DB_NAME: str = getenv('DB_NAME')
+    ENVIRONMENT: str = getenv('ENVIRONMENT')
+    PORT: str = getenv('PORT')
 
 logging.basicConfig(
     level=logging.INFO,

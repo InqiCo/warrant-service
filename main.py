@@ -18,7 +18,7 @@ async def lifespan(app: FastAPI):
     connection = await connect_robust(settings.URL_RABBIT_MQ)
     channel = await connection.channel()
 
-    queue = await channel.declare_queue('publish-warrants', durable=True)
+    queue = await channel.declare_queue(f'publish-warrants-{settings.ENVIRONMENT}', durable=True)
 
     async def consume(queue, name_queue):
         async with queue.iterator() as queue_iter:
@@ -50,7 +50,7 @@ async def lifespan(app: FastAPI):
 
                         await channel.default_exchange.publish(
                             Message(new_message_body.encode()),
-                            routing_key='result-warrants'
+                            routing_key=f'result-warrants-{settings.ENVIRONMENT}'
                         )
 
                     except Exception as e:
@@ -74,4 +74,8 @@ app = FastAPI(lifespan=lifespan)
 
 
 if __name__ == '__main__':
-    uvicorn.run('main:app', host='0.0.0.0', port=8028, reload=True)
+    uvicorn.run(
+        'main:app',
+        host='0.0.0.0', port=int(settings.PORT),
+        reload=True
+    )
