@@ -159,7 +159,7 @@ class CrawlerCriminal:
                 dict_return = {
                     'file': no_warrants_file,
                     'criminal_record': [],
-                    'cpf': dict_warrants['task_id']
+                    'task_id': dict_warrants['task_id']
                 }
 
                 return dict_return
@@ -185,7 +185,7 @@ class CrawlerCriminal:
                     dict_return = {
                         'file': w['file'],
                         'criminal_record': criminal_record_save,
-                        'cpf': dict_warrants['task_id']
+                        'task_id': dict_warrants['task_id']
                     }
 
                     return dict_return
