@@ -20,15 +20,20 @@ async def lifespan(app: FastAPI):
 
     queue = await channel.declare_queue(f'publish-warrants-{settings.ENVIRONMENT}', durable=True)
 
+    max_retries = 5
+
     async def consume(queue, name_queue):
         async with queue.iterator() as queue_iter:
             async for message in queue_iter:
-                async with message.process():
+                async with message.process(ignore_processed=True):
                     try:
                         raw = message.body.decode()
                         body = json.loads(raw)
 
-                        logger.info(f'[{name_queue}] Mensagem recebida: {body['query_id']}')
+                        retry_count = body.get('retry_count', 0)
+
+                        logger.info(
+                            f'[{name_queue}] Mensagem recebida: {body["query_id"]} (tentativa {retry_count + 1})')
 
                         await collection_queries.update_one(
                             {'_id': body['query_id']},
@@ -55,7 +60,31 @@ async def lifespan(app: FastAPI):
 
                     except Exception as e:
                         logger.error(f'[{name_queue}] Erro ao processar mensagem: {e}')
-                        raise
+
+                        retry_count = body.get('retry_count', 0)
+
+                        if retry_count < max_retries:
+                            body['retry_count'] = retry_count + 1
+                            new_body = json.dumps(body)
+
+                            await asyncio.sleep(2)
+
+                            await channel.default_exchange.publish(
+                                Message(new_body.encode()),
+                                routing_key=f'publish-warrants-{settings.ENVIRONMENT}'
+                            )
+
+                            logger.warning(f"[{name_queue}] Reenviando mensagem. Tentativa {retry_count + 1}")
+                        else:
+                            body['error'] = str(e)
+                            dlq_body = json.dumps(body)
+
+                            await channel.default_exchange.publish(
+                                Message(dlq_body.encode()),
+                                routing_key=f'dlq-warrants-{settings.ENVIRONMENT}'
+                            )
+
+                            logger.error(f"[{name_queue}] Mensagem enviada para DLQ após {max_retries} tentativas.")
 
     tasks = [
         asyncio.create_task(consume(queue, f'publish-warrants-{i+1}'))
