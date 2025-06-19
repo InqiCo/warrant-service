@@ -6,6 +6,7 @@ from twocaptcha import TwoCaptcha
 import requests
 
 from app.config import settings
+from utils.utils import clear_tax_id
 
 
 class CrawlerCriminal:
@@ -159,7 +160,7 @@ class CrawlerCriminal:
                 dict_return = {
                     'file': no_warrants_file,
                     'criminal_record': [],
-                    'tax_id': dict_warrants['tax_id']
+                    'tax_id': clear_tax_id(dict_warrants['tax_id'])
                 }
 
                 return dict_return
@@ -185,7 +186,7 @@ class CrawlerCriminal:
                     dict_return = {
                         'file': w['file'],
                         'criminal_record': criminal_record_save,
-                        'tax_id': dict_warrants['tax_id']
+                        'tax_id': clear_tax_id(dict_warrants['tax_id'])
                     }
 
                     return dict_return
