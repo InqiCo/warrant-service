@@ -83,6 +83,16 @@ async def lifespan(app: FastAPI):
                                 routing_key=f'dlq-warrants-{settings.ENVIRONMENT}'
                             )
 
+                            await collection_queries.update_one(
+                                {'_id': body['query_id']},
+                                {
+                                    '$set': {
+                                        f'status.{body['service_code']}': 'ER',
+                                        'updated_at': get_brazil_datetime()
+                                    }
+                                }
+                            )
+
                             logger.error(f"[{name_queue}] Mensagem enviada para DLQ após {max_retries} tentativas.")
 
     tasks = [
