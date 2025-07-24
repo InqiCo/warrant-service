@@ -10,6 +10,7 @@ from aio_pika import connect_robust, Message
 from app.db import collection_queries, get_brazil_datetime
 from service.run_crawler import CrawlerCriminal
 from app.config import settings, logger
+from service.save_result import save_result
 
 
 @asynccontextmanager
@@ -50,12 +51,10 @@ async def lifespan(app: FastAPI):
                         logger.info(f'[{name_queue}] Mensagem processada com sucesso.')
 
                         body.update({'result': result})
-                        new_message_body = json.dumps(body)
 
-                        await channel.default_exchange.publish(
-                            Message(new_message_body.encode()),
-                            routing_key=f'result-warrants-{settings.ENVIRONMENT}'
-                        )
+                        await save_result(body['query_id'], body.get('result'), body)
+
+                        logger.info(f'Mensagem publicada processada com sucesso {body["query_id"]}')
 
                     except Exception as e:
                         logger.error(f'[{name_queue}] Erro ao processar mensagem: {e}')
