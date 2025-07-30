@@ -54,7 +54,7 @@ async def lifespan(app: FastAPI):
 
                         await save_result(body['query_id'], body.get('result'), body)
 
-                        logger.info(f'Mensagem publicada processada com sucesso {body["query_id"]}')
+                        return logger.info(f'Mensagem publicada processada com sucesso {body["query_id"]}')
 
                     except Exception as e:
                         logger.error(f'[{name_queue}] Erro ao processar mensagem: {e}')
@@ -72,7 +72,7 @@ async def lifespan(app: FastAPI):
                                 routing_key=f'publish-warrants-{settings.ENVIRONMENT}'
                             )
 
-                            logger.warning(f"[{name_queue}] Reenviando mensagem. Tentativa {retry_count + 1}")
+                            return logger.warning(f"[{name_queue}] Reenviando mensagem. Tentativa {retry_count + 1}")
                         else:
                             body['error'] = str(e)
                             dlq_body = json.dumps(body)
@@ -92,7 +92,7 @@ async def lifespan(app: FastAPI):
                                 }
                             )
 
-                            logger.error(f"[{name_queue}] Mensagem enviada para DLQ após {max_retries} tentativas.")
+                            return logger.error(f"[{name_queue}] Mensagem enviada para DLQ após {max_retries} tentativas.")
 
     tasks = [
         asyncio.create_task(consume(queue, f'publish-warrants-{i+1}'))
