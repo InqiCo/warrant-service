@@ -6,6 +6,7 @@ from twocaptcha import TwoCaptcha
 import requests
 
 from app.config import settings
+from utils.utils import clear_tax_id
 
 
 class CrawlerCriminal:
@@ -138,7 +139,7 @@ class CrawlerCriminal:
         })
 
         payload = {
-            'numeroCpf': dict_warrants['cpf'],
+            'numeroCpf': dict_warrants['tax_id'],
             'orgaoExpeditor': {},
             'buscaOrgaoRecursivo': False,
         }
@@ -153,13 +154,13 @@ class CrawlerCriminal:
         try:
             if not warrants:
                 no_warrants_file = base64.b64encode(
-                    self._generate_no_warrants_file(doc_num=dict_warrants['cpf'])
+                    self._generate_no_warrants_file(doc_num=dict_warrants['tax_id'])
                 ).decode()
 
                 dict_return = {
                     'file': no_warrants_file,
                     'criminal_record': [],
-                    'cpf': dict_warrants['cpf']
+                    'tax_id': clear_tax_id(dict_warrants['tax_id'])
                 }
 
                 return dict_return
@@ -177,7 +178,7 @@ class CrawlerCriminal:
                         'motherName': w['person']['mother_name'],
                         'name': w['person']['name'],
                         'cleanRecord': True,
-                        'taskId': dict_warrants['cpf'],
+                        'taskId': dict_warrants['tax_id'],
                         'expedition': w['expedition'],
                         'fileUrl': w['file']
                     }
@@ -185,7 +186,7 @@ class CrawlerCriminal:
                     dict_return = {
                         'file': w['file'],
                         'criminal_record': criminal_record_save,
-                        'cpf': dict_warrants['cpf']
+                        'tax_id': clear_tax_id(dict_warrants['tax_id'])
                     }
 
                     return dict_return
