@@ -42,7 +42,7 @@ def upload_file_to_service(file_data: str, query_id: str, service_code: str) -> 
     is_base64 = decode_base64_if_needed(file_data) is not None
     ext = 'pdf' if is_base64 else 'html'
 
-    full_filename = f'InqiCo/{settings.ENVIRONMENT}/{service_code}/{query_id}/{data_now}'
+    full_filename = f'{settings.ENVIRONMENT}/{service_code}/{query_id}/{data_now}'
 
     payload = {
         'data': file_data,
